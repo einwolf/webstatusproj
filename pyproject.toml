@@ -1,17 +1,16 @@
 [tool.poetry]
-name = "webstatusproj1"
+name = "webstatusproj"
 version = "0.1.0"
-description = "webstatusproj1"
-authors = ["Your Name <you@example.com>"]
+description = "webstatusproj"
+authors = ["Your Name <36602061+einwolf@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
+Django = "^3.2"
+djangorestframework = "^3.14.0"
+ansible-runner = "^2.2.1"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[virtualenvs]
-create = true
-in-project = true
