@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     'django_dramatiq',
     'django_apscheduler',
 
-    'scheduler',
+    'sched_tasks',
 ]
 
 MIDDLEWARE = [

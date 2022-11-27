@@ -1,5 +1,6 @@
 # runapscheduler.py
 import logging
+import time
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -9,11 +10,14 @@ from django_apscheduler import util
 from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJobExecution
 
+import sched_tasks.tasks
+
 logger = logging.getLogger(__name__)
 
 
 def test_job_in_runapscheduler():
   # Your job processing logic here...
+  time.sleep(3)
   pass
 
 
@@ -21,7 +25,7 @@ def test_job_in_runapscheduler():
 # unusable or are obsolete, are closed before and after your job has run. You should use it
 # to wrap any jobs that you schedule that access the Django database in any way. 
 @util.close_old_connections
-def delete_old_job_executions(max_age=604_800):
+def apscheduler_delete_old_job_executions(max_age=604_800):
   """
   This job deletes APScheduler job execution entries older than `max_age` from the database.
   It helps to prevent the database from filling up with old historical records that are no
@@ -50,7 +54,7 @@ class Command(BaseCommand):
     self.stdout.write("Added job 'test_job_in_runapscheduler'.")
 
     scheduler.add_job(
-      delete_old_job_executions,
+      apscheduler_delete_old_job_executions,
       trigger=CronTrigger(
         # Midnight on Monday, before start of the next work week.
         day_of_week="mon", hour="00", minute="00"
@@ -59,7 +63,19 @@ class Command(BaseCommand):
       max_instances=1,
       replace_existing=True,
     )
-    self.stdout.write("Added weekly job: 'delete_old_job_executions'.")
+    self.stdout.write("Added weekly job: 'apscheduler_delete_old_job_executions'.")
+
+    scheduler.add_job(
+      sched_tasks.tasks.dramatiq_delete_old_tasks,
+      trigger=CronTrigger(
+        # Midnight on Monday, before start of the next work week.
+        day_of_week="mon", hour="00", minute="00"
+      ),
+      id="dramatiq_delete_old_tasks",
+      max_instances=1,
+      replace_existing=True,
+    )
+    self.stdout.write("Added weekly job: 'dramatiq_delete_old_tasks'.")
 
     try:
       self.stdout.write("Starting scheduler...")
