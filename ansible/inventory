@@ -1,0 +1,24 @@
+[redhat:children]
+rhel7
+rhel8
+rhel9
+fedora
+
+[rhel7]
+centos7s01
+rhel7s01
+
+[rhel7:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+[rhel8]
+# centos8s01
+alma8s01
+rhel8s01
+
+[rhel9]
+rhel9s01
+alma9s01
+
+[fedora]
+fedora36s01
