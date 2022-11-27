@@ -24,7 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
-# Add django-debug-toolbar in debug
+# Add django-debug-toolbar in debug config
 if settings.DEBUG:
     import debug_toolbar
 

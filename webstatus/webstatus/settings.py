@@ -29,7 +29,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INTERNAL_IPS = [
-    "127.0.0.1",
+    '127.0.0.1',
 ]
 
 # INTERNAL_IPS
@@ -57,7 +57,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'debug_toolbar',
-    # "django_dramatiq",
+    'django_dramatiq',
+    'django_apscheduler',
+
+    'scheduler',
 ]
 
 MIDDLEWARE = [
@@ -171,29 +174,56 @@ DEBUG_TOOLBAR_CONFIG = {
 
 
 # Dramatiq task manager
+
+# Defines which database should be used to persist Task objects when the
+# AdminMiddleware is enabled.  The default value is "default".
+DRAMATIQ_TASKS_DATABASE = "default"
+
 DRAMATIQ_BROKER = {
-    "BROKER": "dramatiq.brokers.rabbitmq.RabbitmqBroker",
-    "OPTIONS": {
-        "url": "amqp://localhost:5672",
+    # 'BROKER': 'dramatiq.brokers.rabbitmq.RabbitmqBroker',
+    # 'OPTIONS': {
+    #     'url': 'amqp://localhost:5672',
+    # },
+    'BROKER': 'dramatiq.brokers.redis.RedisBroker',
+    'OPTIONS': {
+        'url': 'redis://localhost:6379',
     },
-    "MIDDLEWARE": [
-        "dramatiq.middleware.Prometheus",
-        "dramatiq.middleware.AgeLimit",
-        "dramatiq.middleware.TimeLimit",
-        "dramatiq.middleware.Callbacks",
-        "dramatiq.middleware.Retries",
-        "django_dramatiq.middleware.DbConnectionsMiddleware",
-        "django_dramatiq.middleware.AdminMiddleware",
+    'MIDDLEWARE': [
+        'dramatiq.middleware.Prometheus',
+        'dramatiq.middleware.AgeLimit',
+        'dramatiq.middleware.TimeLimit',
+        'dramatiq.middleware.Callbacks',
+        'dramatiq.middleware.Retries',
+        'django_dramatiq.middleware.DbConnectionsMiddleware',
+        'django_dramatiq.middleware.AdminMiddleware',
     ]
 }
 
-
 DRAMATIQ_RESULT_BACKEND = {
-    "BACKEND": "dramatiq.results.backends.redis.RedisBackend",
-    "BACKEND_OPTIONS": {
-        "url": "redis://localhost:6379",
+    'BACKEND': 'dramatiq.results.backends.redis.RedisBackend',
+    'BACKEND_OPTIONS': {
+        'url': 'redis://localhost:6379',
     },
-    "MIDDLEWARE_OPTIONS": {
-        "result_ttl": 60000
+    'MIDDLEWARE_OPTIONS': {
+        'result_ttl': 60000
     }
 }
+
+
+# APScheduler
+
+# Format string for displaying run time timestamps in the Django admin site. The default
+# just adds seconds to the standard Django format, which is useful for displaying the timestamps
+# for jobs that are scheduled to run on intervals of less than one minute.
+# 
+# See https://docs.djangoproject.com/en/dev/ref/settings/#datetime-format for format string
+# syntax details.
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+
+# Maximum run time allowed for jobs that are triggered manually via the Django admin site, which
+# prevents admin site HTTP requests from timing out.
+# 
+# Longer running jobs should probably be handed over to a background task processing library
+# that supports multiple background worker processes instead (e.g. Dramatiq, Celery, Django-RQ,
+# etc. See: https://djangopackages.org/grids/g/workers-queues-tasks/ for popular options).
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds

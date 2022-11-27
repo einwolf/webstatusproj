@@ -37,6 +37,10 @@ mkdir webstatus/frontend webstatus/templates webstatus/static
 python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
 
+# Task and scheduling workers
+python manage.py rundramatiq
+python manage.py runapscheduler
+
 # Setup after running migrate
 python manage.py createsuperuser
 ```
@@ -60,4 +64,14 @@ npm run watch
 # Static build all bundles once for production
 cd webstatus/frontend
 npm run build
+```
+
+## Redis commands
+
+```bash
+redis-cli ping
+redis-cli -h host -p 6379 ping
+redis-cli info
+
+redis-cli --scan --pattern "*"
 ```
