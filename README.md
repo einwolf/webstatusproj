@@ -11,7 +11,10 @@ pg_ctl reload
 ```
 
 ```sql
-/* Setup a user for the project */
+/*
+ * Setup a user for the project.
+ * Users always have encrypted passwords starting with postgres 10.0.
+ */
 CREATE DATABASE webstatusproject;
 CREATE USER webstatususer WITH PASSWORD 'webstatuspassword';
 -- ALTER USER webstatususer WITH PASSWORD 'webstatuspassword';
@@ -33,6 +36,9 @@ mkdir webstatus/frontend webstatus/templates webstatus/static
 # Django dev
 python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
+
+# Setup after running migrate
+python manage.py createsuperuser
 ```
 
 ## Nodejs setup commands

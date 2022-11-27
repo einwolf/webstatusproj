@@ -28,6 +28,23 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+# INTERNAL_IPS
+if DEBUG:
+    from fnmatch import fnmatch
+    class pattern_list(list):
+        def __contains__(self, key):
+            for pattern in self:
+                if fnmatch(key, pattern): return True
+            return False
+
+    INTERNAL_IPS = pattern_list(['127.0.0.1', '192.168.*.*'])
+else:
+    INTERNAL_IPS = ('127.0.0.1', )
+
 
 # Application definition
 
@@ -135,8 +152,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-    os.path.join(FRONTEND_DIR, "assets"),
+    os.path.join(BASE_DIR, 'static'),
+    os.path.join(FRONTEND_DIR, 'assets'),
 )
 
 
@@ -144,6 +161,13 @@ STATICFILES_DIRS = (
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Django debug toolbar configuration
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_COLLAPSED': True,
+    # 'SHOW_TOOLBAR_CALLBACK': lambda x: True,
+}
 
 
 # Dramatiq task manager
