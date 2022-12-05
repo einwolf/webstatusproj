@@ -4,13 +4,17 @@ import os
 import subprocess
 from pathlib import Path
 
+from ansparse.AnsibleParsePing import AnsibleParsePing
 
 def main():
     playbook_path = "ping.yaml"
 
     result = run_ansible_playbook(playbook_path)
 
-    print(json.dumps(result, indent=4, sort_keys=True))
+    with open("json_result.json", "w+") as json_file:
+        json_file.write(json.dumps(result, indent=4, sort_keys=True))
+
+    ap = AnsibleParsePing(result)
 
     return 0
 
@@ -48,13 +52,14 @@ def run_ansible_playbook(playbook_path):
         # 4 - one or more unreachable hosts
         pass
 
-    # Passing -v causes non-json text to be output before the json part
-    x1 = result.stdout.find("{")
-    stdout = result.stdout[x1:]
+    # Passing -v causes non-json text to be output before the json part (ansible 2.9)
+    json_start = result.stdout.find("{")
+    stdout = result.stdout[json_start:]
 
     json_result = json.loads(stdout)
 
     return json_result
+
 
 if __name__ == "__main__":
     main()
