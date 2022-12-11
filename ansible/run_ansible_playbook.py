@@ -15,6 +15,9 @@ def main():
         json_file.write(json.dumps(result, indent=4, sort_keys=True))
 
     ap = AnsibleParsePing(result)
+    ap.parse_json()
+
+    print(ap.result)
 
     return 0
 
